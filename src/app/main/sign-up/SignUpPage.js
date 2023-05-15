@@ -1,58 +1,56 @@
-import { yupResolver } from '@hookform/resolvers/yup';
-import { Controller, useForm } from 'react-hook-form';
-import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
-import FormControl from '@mui/material/FormControl';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
-import { Link } from 'react-router-dom';
-import * as yup from 'yup';
-import _ from '@lodash';
-import AvatarGroup from '@mui/material/AvatarGroup';
-import Avatar from '@mui/material/Avatar';
-import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
-import FormHelperText from '@mui/material/FormHelperText';
-import jwtService from '../../auth/services/jwtService';
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Controller, useForm } from "react-hook-form";
+import Button from "@mui/material/Button";
+import Checkbox from "@mui/material/Checkbox";
+import FormControl from "@mui/material/FormControl";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+import { Link } from "react-router-dom";
+import * as yup from "yup";
+import _ from "@lodash";
+import AvatarGroup from "@mui/material/AvatarGroup";
+import Avatar from "@mui/material/Avatar";
+import Box from "@mui/material/Box";
+import Paper from "@mui/material/Paper";
+import FormHelperText from "@mui/material/FormHelperText";
+import jwtService from "../../auth/services/jwtService";
 
 /**
  * Form Validation Schema
  */
 const schema = yup.object().shape({
-  displayName: yup.string().required('You must enter display name'),
-  email: yup.string().email('You must enter a valid email').required('You must enter a email'),
-  password: yup
-    .string()
-    .required('Please enter your password.')
-    .min(8, 'Password is too short - should be 8 chars minimum.'),
-  passwordConfirm: yup.string().oneOf([yup.ref('password'), null], 'Passwords must match'),
-  acceptTermsConditions: yup.boolean().oneOf([true], 'The terms and conditions must be accepted.'),
+  firstname: yup.string().required("You must enter First name"),
+  lastname: yup.string().required("You must enter Last name"),
+  mobile: yup.string().required("You must enter Mobile number"),
+
+  acceptTermsConditions: yup
+    .boolean()
+    .oneOf([true], "The terms and conditions must be accepted."),
 });
 
 const defaultValues = {
-  displayName: '',
-  email: '',
-  password: '',
-  passwordConfirm: '',
+  firstname: "",
+  lastname: "",
+  mobile: "",
   acceptTermsConditions: false,
 };
 
 function SignUpPage() {
   const { control, formState, handleSubmit, reset } = useForm({
-    mode: 'onChange',
+    mode: "onChange",
     defaultValues,
     resolver: yupResolver(schema),
   });
 
   const { isValid, dirtyFields, errors, setError } = formState;
 
-  function onSubmit({ displayName, password, email }) {
+  function onSubmit({ firstname, mobile, lastname }) {
     jwtService
       .createUser({
-        displayName,
-        password,
-        email,
+        firstname,
+        lastname,
+        mobile,
       })
       .then((user) => {
         // No need to do anything, registered user data will be set at app/auth/AuthContext
@@ -60,7 +58,7 @@ function SignUpPage() {
       .catch((_errors) => {
         _errors.forEach((error) => {
           setError(error.type, {
-            type: 'manual',
+            type: "manual",
             message: error.message,
           });
         });
@@ -90,17 +88,17 @@ function SignUpPage() {
             onSubmit={handleSubmit(onSubmit)}
           >
             <Controller
-              name="displayName"
+              name="firstname"
               control={control}
               render={({ field }) => (
                 <TextField
                   {...field}
                   className="mb-24"
-                  label="Display name"
+                  label="First Name"
                   autoFocus
                   type="name"
-                  error={!!errors.displayName}
-                  helperText={errors?.displayName?.message}
+                  error={!!errors.firstname}
+                  helperText={errors?.firstname?.message}
                   variant="outlined"
                   required
                   fullWidth
@@ -109,52 +107,33 @@ function SignUpPage() {
             />
 
             <Controller
-              name="email"
+              name="lastname"
               control={control}
               render={({ field }) => (
                 <TextField
                   {...field}
                   className="mb-24"
-                  label="Email"
+                  label="Last Name"
                   type="email"
-                  error={!!errors.email}
-                  helperText={errors?.email?.message}
+                  error={!!errors.lastname}
+                  helperText={errors?.lastname?.message}
                   variant="outlined"
                   required
                   fullWidth
                 />
               )}
             />
-
             <Controller
-              name="password"
+              name="mobile"
               control={control}
               render={({ field }) => (
                 <TextField
                   {...field}
                   className="mb-24"
-                  label="Password"
-                  type="password"
-                  error={!!errors.password}
-                  helperText={errors?.password?.message}
-                  variant="outlined"
-                  required
-                  fullWidth
-                />
-              )}
-            />
-
-            <Controller
-              name="passwordConfirm"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  className="mb-24"
-                  label="Password (Confirm)"
-                  type="password"
-                  error={!!errors.passwordConfirm}
-                  helperText={errors?.passwordConfirm?.message}
+                  label="Mobile No"
+                  type="email"
+                  error={!!errors.mobile}
+                  helperText={errors?.mobile?.message}
                   variant="outlined"
                   required
                   fullWidth
@@ -166,12 +145,17 @@ function SignUpPage() {
               name="acceptTermsConditions"
               control={control}
               render={({ field }) => (
-                <FormControl className="items-center" error={!!errors.acceptTermsConditions}>
+                <FormControl
+                  className="items-center"
+                  error={!!errors.acceptTermsConditions}
+                >
                   <FormControlLabel
                     label="I agree to the Terms of Service and Privacy Policy"
                     control={<Checkbox size="small" {...field} />}
                   />
-                  <FormHelperText>{errors?.acceptTermsConditions?.message}</FormHelperText>
+                  <FormHelperText>
+                    {errors?.acceptTermsConditions?.message}
+                  </FormHelperText>
                 </FormControl>
               )}
             />
@@ -193,7 +177,7 @@ function SignUpPage() {
 
       <Box
         className="relative hidden md:flex flex-auto items-center justify-center h-full p-64 lg:px-112 overflow-hidden"
-        sx={{ backgroundColor: 'primary.main' }}
+        sx={{ backgroundColor: "primary.main" }}
       >
         <svg
           className="absolute inset-0 pointer-events-none"
@@ -205,7 +189,7 @@ function SignUpPage() {
         >
           <Box
             component="g"
-            sx={{ color: 'primary.light' }}
+            sx={{ color: "primary.light" }}
             className="opacity-20"
             fill="none"
             stroke="currentColor"
@@ -218,7 +202,7 @@ function SignUpPage() {
         <Box
           component="svg"
           className="absolute -top-64 -right-64 opacity-20"
-          sx={{ color: 'primary.light' }}
+          sx={{ color: "primary.light" }}
           viewBox="0 0 220 192"
           width="220px"
           height="192px"
@@ -236,7 +220,11 @@ function SignUpPage() {
               <rect x="0" y="0" width="4" height="4" fill="currentColor" />
             </pattern>
           </defs>
-          <rect width="220" height="192" fill="url(#837c3e70-6c3a-44e6-8854-cc48c737b659)" />
+          <rect
+            width="220"
+            height="192"
+            fill="url(#837c3e70-6c3a-44e6-8854-cc48c737b659)"
+          />
         </Box>
 
         <div className="z-10 relative w-full max-w-2xl">
@@ -245,14 +233,15 @@ function SignUpPage() {
             <div>our community</div>
           </div>
           <div className="mt-24 text-lg tracking-tight leading-6 text-gray-400">
-            Fuse helps developers to build organized and well coded dashboards full of beautiful and
-            rich modules. Join us and start building your application today.
+            Fuse helps developers to build organized and well coded dashboards
+            full of beautiful and rich modules. Join us and start building your
+            application today.
           </div>
           <div className="flex items-center mt-32">
             <AvatarGroup
               sx={{
-                '& .MuiAvatar-root': {
-                  borderColor: 'primary.main',
+                "& .MuiAvatar-root": {
+                  borderColor: "primary.main",
                 },
               }}
             >
